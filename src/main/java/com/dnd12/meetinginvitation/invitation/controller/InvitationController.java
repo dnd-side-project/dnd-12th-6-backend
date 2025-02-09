@@ -29,9 +29,6 @@ public class InvitationController {
 
     @RequestMapping(value = "/makeInvitation", method = RequestMethod.PUT)
     public ResponseEntity<ResponseDto> makeInvitation(@ModelAttribute InvitationDto invitationDto, @AuthenticationPrincipal String email){
-        log.info("유저:{}", invitationDto.getCreator_id());
-        log.info("장소:{}", invitationDto.getPlace());
-        log.info("상태:{}", invitationDto.getState());
         return invitationService.makeInvitation(invitationDto);
     }
 

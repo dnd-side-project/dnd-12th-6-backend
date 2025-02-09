@@ -35,21 +35,12 @@ public class InvitationService {
 
     //초대장 생성
     public ResponseEntity<ResponseDto> makeInvitation(InvitationDto invitationDto){
-        log.info("서비스 진입");
-        log.info("유저:{}", invitationDto.getCreator_id());
-        log.info("장소:{}", invitationDto.getPlace());
-        log.info("상태:{}", invitationDto.getState());
-        log.info("DTO:{}", invitationDto);
-
 
         try {
-            log.info("유저 조회");
 
             // User 조회 (creator_id를 통해)
             User user = userRepository.findById(invitationDto.getCreator_id())
                     .orElseThrow(() -> new RuntimeException("Fail: user not found with id: " + invitationDto.getCreator_id()));
-
-            log.info("유저 조회 끝");
 
             //파일 저장 처리
             String fileUrl = null;
@@ -190,10 +181,5 @@ public ResponseEntity<ResponseDto> deleteInvitation(Long invitationId){
     invitationRepository.deleteById(invitationId);
     return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
 }
-
-
-
-
-
 
 }
