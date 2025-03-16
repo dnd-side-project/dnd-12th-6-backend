@@ -1,14 +1,18 @@
 package com.dnd12.meetinginvitation.attendence.service;
 
 import com.dnd12.meetinginvitation.attendence.dto.AttendanceRequest;
+import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginRequest;
+import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginResponse;
 import com.dnd12.meetinginvitation.attendence.dto.UserAttendanceRequest;
 import com.dnd12.meetinginvitation.attendence.entity.Attendance;
 import com.dnd12.meetinginvitation.attendence.repository.AttendanceRepository;
+import com.dnd12.meetinginvitation.common.exception.InvalidPasswordException;
 import com.dnd12.meetinginvitation.invitation.entity.Invitation;
 import com.dnd12.meetinginvitation.invitation.entity.InvitationParticipant;
 import com.dnd12.meetinginvitation.invitation.enums.InvitationType;
 import com.dnd12.meetinginvitation.invitation.repository.InvitationParticipantRepository;
 import com.dnd12.meetinginvitation.invitation.repository.InvitationRepository;
+import com.dnd12.meetinginvitation.jwt.JwtTokenProvider;
 import com.dnd12.meetinginvitation.user.entity.User;
 import com.dnd12.meetinginvitation.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +35,7 @@ public class AttendanceService {
     private final InvitationRepository invitationRepository;
     private final UserRepository userRepository;
     private final InvitationParticipantRepository invitationParticipantRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     //비회원 응답
@@ -95,13 +101,29 @@ public class AttendanceService {
 
 
     }
-
-
     // 비밀번호 확인 메서드
     public boolean checkPassword(Long attendanceId, String rawPassword) {
         Attendance attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid attendance ID"));
 
         return passwordEncoder.matches(rawPassword, attendance.getPassword());
+    }
+
+    public NonUserLoginResponse nonUserLogin(NonUserLoginRequest request) {
+        Attendance attendance = attendanceRepository
+                .findByInvitationIdAndName(request.getInvitationId(), request.getName());
+
+        if (!passwordEncoder.matches(request.getPassword(), attendance.getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        String token = jwtTokenProvider.createNonUserAccessToken(request.getName());
+
+        return NonUserLoginResponse.builder()
+                .invitationId(attendance.getId())
+                .state(attendance.getState())
+                .name(attendance.getName())
+                .token(token)
+                .build();
     }
 }

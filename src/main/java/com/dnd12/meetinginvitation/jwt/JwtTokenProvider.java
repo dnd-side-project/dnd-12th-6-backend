@@ -77,6 +77,15 @@ public class JwtTokenProvider {
         return createToken(claims, REFRESH_TOKEN_VALIDITY);
     }
 
+    // 비회원 로그인 Access 토큰 생성
+    public String createNonUserAccessToken(String name) {
+        log.info("create NonUser accessToken");
+        Claims claims = Jwts.claims().setSubject(name);
+        claims.put("type", "access");
+
+        return createToken(claims, ACCESS_TOKEN_VALIDITY);
+    }
+
     public String createToken(Claims claims, long validitytime) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validitytime);

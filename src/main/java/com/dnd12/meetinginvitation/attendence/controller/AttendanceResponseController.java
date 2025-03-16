@@ -1,9 +1,12 @@
 package com.dnd12.meetinginvitation.attendence.controller;
 
 import com.dnd12.meetinginvitation.attendence.dto.AttendanceRequest;
+import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginRequest;
+import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginResponse;
 import com.dnd12.meetinginvitation.attendence.dto.UserAttendanceRequest;
 import com.dnd12.meetinginvitation.attendence.service.AttendanceService;
 import com.dnd12.meetinginvitation.common.ApiResponse;
+import com.dnd12.meetinginvitation.common.exception.InvalidPasswordException;
 import com.dnd12.meetinginvitation.user.dto.LoginResponse;
 import com.dnd12.meetinginvitation.user.service.KakaoLoginService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,14 +48,14 @@ public class AttendanceResponseController {
     }
 
     //비회원 로그인 후 응답
-    @Operation(summary = "비화원 로그인", description = "state : ATTENDING(참석), NOT_ATTENDING(불참), PENDING(보류/미정)")
+    @Operation(summary = "비회원 응답", description = "state : ATTENDING(참석), NOT_ATTENDING(불참), PENDING(보류/미정)")
     @PostMapping("/nonUser/response")
     public ResponseEntity<ApiResponse<Void>> AttendanceResponse(@RequestBody AttendanceRequest request) {
         attendanceService.saveAttendance(request);
         return ResponseEntity.ok(ApiResponse.success("비회원 참석자 응답 성공"));
     }
 
-    @Operation(summary = "화원 로그인", description = "state : ATTENDING(참석), NOT_ATTENDING(불참), PENDING(보류/미정)")
+    @Operation(summary = "회원 응답", description = "state : ATTENDING(참석), NOT_ATTENDING(불참), PENDING(보류/미정)")
     @PostMapping("/user/response")
     public ResponseEntity<ApiResponse<Void>> UserAttendanceResponse(@RequestBody UserAttendanceRequest userAttendanceRequest) {
         attendanceService.saveUserAttendance(userAttendanceRequest);
@@ -96,11 +99,25 @@ public class AttendanceResponseController {
                     .build()
                     .toUriString();
 
-            log.info("redirectUrl:{}",redirectUrl);
+            log.info("redirectUrl:{}", redirectUrl);
 
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
             log.error("Redirect failed: ", e);
         }
+    }
+
+    //비회원 로그인
+    @PostMapping("/nonUser/login")
+    public ResponseEntity<?> nonUserLogin(@RequestBody NonUserLoginRequest request) {
+        try {
+            NonUserLoginResponse nonUserLoginResponse = attendanceService.nonUserLogin(request);
+            return ResponseEntity.ok(nonUserLoginResponse);
+        } catch (InvalidPasswordException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+
+
+
     }
 }
