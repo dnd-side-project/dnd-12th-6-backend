@@ -146,7 +146,21 @@ public class InvitationController {
         return invitationService.getInvitationResponseList(invitationId);
     }
 
+    //[임시 API]
+    //초대장 링크 공유(진행중 - 기존로직을 수정 or 신규api개발 필요)
+    @Operation(summary = "초대장 링크 공유", description = "")
+    @RequestMapping(value = "/getInvitationLink", method = RequestMethod.GET)
+    public ResponseEntity<ResponseDto> getInvitationLink(@RequestParam("invitationId") Long invitationId){
+        return invitationService.getInvitationLink(invitationId);
+    }
 
+    //[임시 API]
+    //초대장 취소
+    @Operation(summary = "초대장 취소", description = "")
+    @RequestMapping(value = "/doCancelInvitation", method = RequestMethod.PUT)
+    public ResponseEntity<ResponseDto> doCancelInvitation(@RequestParam("invitationId") Long invitationId){
+        return invitationService.doCancelInvitation(invitationId);
+    }
 
 
 
