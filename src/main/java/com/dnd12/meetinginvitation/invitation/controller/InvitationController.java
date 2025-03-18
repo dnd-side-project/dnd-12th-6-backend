@@ -160,8 +160,7 @@ public class InvitationController {
     public ResponseEntity<ResponseDto> getInvitationLink(@RequestParam("invitationId") Long invitationId){
         return invitationService.getInvitationLink(invitationId);
     }
-
-    //[임시 API]
+    
     //초대장 취소
     @Operation(summary = "초대장 취소", description = "")
     @RequestMapping(value = "/doCancelInvitation", method = RequestMethod.PUT)
