@@ -329,6 +329,7 @@ public class InvitationService {
         dto.setThemeName(invitation.getTheme().getThemeName());
         dto.setHostProfileImageUrl(invitation.getUser().getProfileImageUrl());
         dto.setBasicBackgroundType(invitation.getBasicBackgroundType());
+        dto.setInviteKey(invitation.getInviteKey());
         invitationList.add(dto);
 
         return ResponseEntity.ok(ResponseDto.success(invitationList));
@@ -390,6 +391,7 @@ public class InvitationService {
                 dto.setThemeName( invitation.getTheme().getThemeName());
                 dto.setHostProfileImageUrl(invitation.getUser().getProfileImageUrl());
                 dto.setBasicBackgroundType(invitation.getBasicBackgroundType());
+                dto.setInviteKey(invitation.getInviteKey());
                 invitationList.add(dto);
 
             }

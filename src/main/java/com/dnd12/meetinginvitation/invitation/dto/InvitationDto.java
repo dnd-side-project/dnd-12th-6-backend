@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvitationDto {
-    public InvitationDto(Long creatorId, Long invitationId, LocalDateTime createdAt, LocalDateTime updatedAt, String organizerName, String place, String detailAddress, LocalDateTime date, int maxAttendances, String description, InvitationState state, String link, InvitationType invitationType, String fontName, String sticker, String title, String backgroundImageData, String themeName, String hostProfileImageUrl) {
+    public InvitationDto(Long creatorId, Long invitationId, LocalDateTime createdAt, LocalDateTime updatedAt, String organizerName, String place, String detailAddress, LocalDateTime date, int maxAttendances, String description, InvitationState state, String link, InvitationType invitationType, String fontName, String sticker, String title, String backgroundImageData, String themeName, String hostProfileImageUrl, String inviteKey) {
         this.creatorId = creatorId;
         this.invitationId = invitationId;
         this.createdAt = createdAt;
@@ -35,6 +35,7 @@ public class InvitationDto {
         this.backgroundImageData = backgroundImageData;
         this.themeName = themeName;
         this.hostProfileImageUrl = hostProfileImageUrl;
+        this.inviteKey = inviteKey;
     }
 
     private Long creatorId;
@@ -57,6 +58,7 @@ public class InvitationDto {
     private String themeName;
     private String basicBackgroundType;
     private String hostProfileImageUrl;
+    private String inviteKey;
 
 
 
