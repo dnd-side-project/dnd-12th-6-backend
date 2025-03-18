@@ -16,6 +16,7 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByUserId(Long userId);
     Optional<Invitation> findById(Long id);
     Invitation findInvitationById(Long invitationId);
+    Invitation findInvitationByInviteKey(String inviteKey);
     Page<Invitation> findByUserId(Long userId, Pageable pageable);
     Page<Invitation> findByParticipantsUserIdAndParticipantsInvitationType(Long userId, InvitationType invitationType, Pageable pageable);
 }

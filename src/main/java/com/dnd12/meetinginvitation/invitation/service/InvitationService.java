@@ -269,6 +269,41 @@ public class InvitationService {
         return ResponseEntity.ok(ResponseDto.success(dtoList));
     }
 
+    //서브키로 특정 초대장 조회
+    public ResponseEntity<ResponseDto> getInvitationByInviteKey(String inviteKey){
+
+        //String decrypt = AESUtil.decrypt(inviteKey);
+        Invitation invitation = invitationRepository.findInvitationByInviteKey(inviteKey);
+        List<InvitationDto> invitationList = new ArrayList<>();
+
+        InvitationDto dto = new InvitationDto();
+        dto.setCreatorId(invitation.getUser().getId());
+        dto.setInvitationId(invitation.getId());
+        dto.setCreatedAt(invitation.getCreatedAt());
+        dto.setUpdatedAt(invitation.getUpdatedAt());
+        dto.setPlace(invitation.getPlace());
+        dto.setDetailAddress(invitation.getDetailAddress());
+        dto.setDescription(invitation.getDescription());
+        dto.setDate(invitation.getDate());
+        dto.setMaxAttendances(invitation.getMaxAttendences());
+        dto.setState(invitation.getState());
+        dto.setLink(invitation.getLink());
+        dto.setFontName(invitation.getLink());
+        dto.setFontName(invitation.getFont().getFontName());
+        dto.setSticker(invitation.getSticker().getStickerName());
+        dto.setOrganizerName(invitation.getOrganizerName());
+        dto.setTitle(invitation.getTitle());
+        dto.setBackgroundImageData(invitation.getBackgroundUrl());
+        dto.setThemeName(invitation.getTheme().getThemeName());
+        dto.setHostProfileImageUrl(invitation.getUser().getProfileImageUrl());
+        dto.setBasicBackgroundType(invitation.getBasicBackgroundType());
+        dto.setInviteKey(invitation.getInviteKey());
+        invitationList.add(dto);
+
+        return ResponseEntity.ok(ResponseDto.success(invitationList));
+
+    }
+
 
     //초대장 링크 생성 및 해당 링크 반환
     public ResponseEntity<ResponseDto> getInvitationLink(Long invitationId){

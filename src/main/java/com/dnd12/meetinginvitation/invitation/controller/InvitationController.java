@@ -146,6 +146,13 @@ public class InvitationController {
         return invitationService.getInvitationResponseList(invitationId);
     }
 
+    //서브키로 특정 초대장 조회 API
+    @Operation(summary = "서브키로 특정 초대장 조회", description = "")
+    @RequestMapping(value = "/getInvitationByInviteKey", method = RequestMethod.GET)
+    public ResponseEntity<ResponseDto> getInvitationByInviteKey(@RequestParam("inviteKey") String inviteKey){
+        return invitationService.getInvitationByInviteKey(inviteKey);
+    }
+
     //[임시 API]
     //초대장 링크 공유(진행중 - 기존로직을 수정 or 신규api개발 필요)
     @Operation(summary = "초대장 링크 공유", description = "")
