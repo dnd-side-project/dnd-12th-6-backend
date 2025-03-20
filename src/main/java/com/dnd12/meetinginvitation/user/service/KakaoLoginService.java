@@ -35,6 +35,9 @@ public class KakaoLoginService {
     @Value("${kakao.client-secret}")
     private String clientSecret;
 
+//    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+//    private String redirectUri;
+
     private final String KAUTH_TOKEN_URL_HOST = "https://kauth.kakao.com";
     private final String KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
     private final long tokenValidityInMilliseconds = 1000L * 60 * 60 * 3; //레디스에 토큰 저장 시간
