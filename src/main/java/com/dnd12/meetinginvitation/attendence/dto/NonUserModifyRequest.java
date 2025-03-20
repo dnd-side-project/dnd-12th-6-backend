@@ -1,17 +1,16 @@
 package com.dnd12.meetinginvitation.attendence.dto;
 
 import com.dnd12.meetinginvitation.invitation.enums.AttendanceStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Builder
-public class NonUserLoginResponse {
-    private Long invitationId;
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class NonUserModifyRequest {
     private AttendanceStatus state;
-    private String name;
-    private String message;
-    private String token;
-    private Long id;
+    private String newMessage;
 }
