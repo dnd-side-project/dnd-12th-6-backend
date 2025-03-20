@@ -314,7 +314,7 @@ public class InvitationService {
         List<Invitation> allInvitations = invitationRepository.findAll();
         for(Invitation invitation : allInvitations){
             String inviteKey = invitation.getInviteKey();
-            if(inviteKey.isEmpty()){
+            if(inviteKey.isEmpty() || inviteKey.equals("default_value")){
                 invitation.setInviteKey(AESUtil.encrypt(String.valueOf(invitation.getId())));
             }
             invitationRepository.save(invitation);
