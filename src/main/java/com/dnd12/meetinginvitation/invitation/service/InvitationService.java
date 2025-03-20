@@ -5,6 +5,7 @@ import com.dnd12.meetinginvitation.attendence.dto.AttendanceResponseDto;
 import com.dnd12.meetinginvitation.attendence.entity.Attendance;
 import com.dnd12.meetinginvitation.attendence.repository.AttendanceRepository;
 import com.dnd12.meetinginvitation.invitation.dto.InvitationDto;
+import com.dnd12.meetinginvitation.invitation.dto.InvitationResponseDto;
 import com.dnd12.meetinginvitation.invitation.dto.ResponseDto;
 import com.dnd12.meetinginvitation.invitation.entity.*;
 import com.dnd12.meetinginvitation.invitation.enums.InvitationState;
@@ -12,6 +13,7 @@ import com.dnd12.meetinginvitation.invitation.enums.InvitationType;
 import com.dnd12.meetinginvitation.invitation.repository.*;
 import com.dnd12.meetinginvitation.user.entity.User;
 import com.dnd12.meetinginvitation.user.repository.UserRepository;
+import com.dnd12.meetinginvitation.util.AESUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,6 +55,7 @@ public class InvitationService {
     private ThemeRepository themeRepository;
     @Autowired
     private AttendanceRepository attendanceRepository;
+
 
     //초대장 생성
     @Transactional
@@ -120,9 +123,10 @@ public class InvitationService {
                     .backgroundUrl(fileUrl)
                     .build();
 
-
-            //초대장 저장
-            invitationRepository.save(invitation);
+            //초대장 저장 + 서브키 생성 및 저장
+            Invitation savedInvitation = invitationRepository.save(invitation);
+            savedInvitation.setInviteKey(AESUtil.encrypt(String.valueOf(savedInvitation.getId())));
+            invitationRepository.save(savedInvitation);
 
             //초대장 생성시 invitationType은 항상 CREATOR (초대장을 누군가에게 전송할 경우 INVITED로 변경해서 전송)
             InvitationParticipant creatorParticipant = InvitationParticipant.builder()
@@ -144,9 +148,14 @@ public class InvitationService {
             invitationParticipantRepository.save(creatorParticipant);
 
             Long invitationId = invitation.getId();
-
-            return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("invitationId : " + invitationId)));
-
+            String inviteKey = invitation.getInviteKey();
+            
+            InvitationResponseDto resDto = new InvitationResponseDto();
+            resDto.setInvitationId(invitationId); //PK
+            resDto.setInviteKey(inviteKey); //서브키
+            List<InvitationResponseDto> responseDto = new ArrayList<>();
+            responseDto.add(resDto);
+            return ResponseEntity.ok(ResponseDto.success(responseDto));
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -260,6 +269,80 @@ public class InvitationService {
         return ResponseEntity.ok(ResponseDto.success(dtoList));
     }
 
+    //서브키로 특정 초대장 조회
+    public ResponseEntity<ResponseDto> getInvitationByInviteKey(String inviteKey){
+
+        //String decrypt = AESUtil.decrypt(inviteKey);
+        Invitation invitation = invitationRepository.findInvitationByInviteKey(inviteKey);
+        List<InvitationDto> invitationList = new ArrayList<>();
+
+        InvitationDto dto = new InvitationDto();
+        dto.setCreatorId(invitation.getUser().getId());
+        dto.setInvitationId(invitation.getId());
+        dto.setCreatedAt(invitation.getCreatedAt());
+        dto.setUpdatedAt(invitation.getUpdatedAt());
+        dto.setPlace(invitation.getPlace());
+        dto.setDetailAddress(invitation.getDetailAddress());
+        dto.setDescription(invitation.getDescription());
+        dto.setDate(invitation.getDate());
+        dto.setMaxAttendances(invitation.getMaxAttendences());
+        dto.setState(invitation.getState());
+        dto.setLink(invitation.getLink());
+        dto.setFontName(invitation.getLink());
+        dto.setFontName(invitation.getFont().getFontName());
+        dto.setSticker(invitation.getSticker().getStickerName());
+        dto.setOrganizerName(invitation.getOrganizerName());
+        dto.setTitle(invitation.getTitle());
+        dto.setBackgroundImageData(invitation.getBackgroundUrl());
+        dto.setThemeName(invitation.getTheme().getThemeName());
+        dto.setHostProfileImageUrl(invitation.getUser().getProfileImageUrl());
+        dto.setBasicBackgroundType(invitation.getBasicBackgroundType());
+        dto.setInviteKey(invitation.getInviteKey());
+        invitationList.add(dto);
+
+        return ResponseEntity.ok(ResponseDto.success(invitationList));
+
+    }
+
+
+    //초대장 링크 생성 및 해당 링크 반환
+    public ResponseEntity<ResponseDto> getInvitationLink(Long invitationId){
+        return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
+    }
+
+    public ResponseEntity<ResponseDto>  updateSubKey(){
+        List<Invitation> allInvitations = invitationRepository.findAll();
+        for(Invitation invitation : allInvitations){
+            String inviteKey = invitation.getInviteKey();
+            if(inviteKey.isEmpty()){
+                invitation.setInviteKey(AESUtil.encrypt(String.valueOf(invitation.getId())));
+            }
+            invitationRepository.save(invitation);
+        }
+        return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
+    }
+
+
+
+    //초대장 취소(모임 취소)
+    public ResponseEntity<ResponseDto> doCancelInvitation(Long invitationId){
+        //초대장 조회
+        Optional<Invitation> optionalInvitation = invitationRepository.findById(invitationId);
+        if (!optionalInvitation.isPresent()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDto.fail("Fail: Invitation not found with id " + invitationId));
+        }
+
+        Invitation invitation = optionalInvitation.get();
+        invitation.setState(InvitationState.CANCELED);
+
+        //초대장 업데이트 날짜 갱신
+        invitation.setUpdatedAt(LocalDateTime.now());
+
+        invitationRepository.save(invitation);
+        return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
+
+    }
 
     //특정 초대장 조회
     public ResponseEntity<ResponseDto> getSpecificInvitation(Long invitationId){
@@ -291,6 +374,7 @@ public class InvitationService {
         dto.setThemeName(invitation.getTheme().getThemeName());
         dto.setHostProfileImageUrl(invitation.getUser().getProfileImageUrl());
         dto.setBasicBackgroundType(invitation.getBasicBackgroundType());
+        dto.setInviteKey(invitation.getInviteKey());
         invitationList.add(dto);
 
         return ResponseEntity.ok(ResponseDto.success(invitationList));
@@ -352,6 +436,7 @@ public class InvitationService {
                 dto.setThemeName( invitation.getTheme().getThemeName());
                 dto.setHostProfileImageUrl(invitation.getUser().getProfileImageUrl());
                 dto.setBasicBackgroundType(invitation.getBasicBackgroundType());
+                dto.setInviteKey(invitation.getInviteKey());
                 invitationList.add(dto);
 
             }

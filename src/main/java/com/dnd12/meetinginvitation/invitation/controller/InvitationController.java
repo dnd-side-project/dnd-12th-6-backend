@@ -146,7 +146,34 @@ public class InvitationController {
         return invitationService.getInvitationResponseList(invitationId);
     }
 
+    //서브키로 특정 초대장 조회 API
+    @Operation(summary = "서브키로 특정 초대장 조회", description = "")
+    @RequestMapping(value = "/getInvitationByInviteKey", method = RequestMethod.GET)
+    public ResponseEntity<ResponseDto> getInvitationByInviteKey(@RequestParam("inviteKey") String inviteKey){
+        return invitationService.getInvitationByInviteKey(inviteKey);
+    }
 
+    //[임시 API]
+    //초대장 링크 공유(진행중 - 기존로직을 수정 or 신규api개발 필요)
+    @Operation(summary = "초대장 링크 공유", description = "")
+    @RequestMapping(value = "/getInvitationLink", method = RequestMethod.GET)
+    public ResponseEntity<ResponseDto> getInvitationLink(@RequestParam("invitationId") Long invitationId){
+        return invitationService.getInvitationLink(invitationId);
+    }
+    
+    //초대장 취소
+    @Operation(summary = "초대장 취소", description = "")
+    @RequestMapping(value = "/doCancelInvitation", method = RequestMethod.PUT)
+    public ResponseEntity<ResponseDto> doCancelInvitation(@RequestParam("invitationId") Long invitationId){
+        return invitationService.doCancelInvitation(invitationId);
+    }
+
+    //초대장 서브키가 없을 경우 PK값으로 서브키 생성(기존 데이터들에 대해 갱신 작업)
+    @Operation(summary = "기존 초대장 서브키 설정 API", description = "서브키 기능이 추가되기 이전에 생성된 초대장에 대해 서브키 생성 해주는 API")
+    @RequestMapping(value = "/doCancelInvitation", method = RequestMethod.POST)
+    public ResponseEntity<ResponseDto> updateSubKey(){
+        return invitationService.updateSubKey();
+    }
 
 
 
