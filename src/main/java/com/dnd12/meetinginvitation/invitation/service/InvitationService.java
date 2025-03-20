@@ -310,10 +310,22 @@ public class InvitationService {
         return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
     }
 
+    public ResponseEntity<ResponseDto>  updateSubKey(){
+        List<Invitation> allInvitations = invitationRepository.findAll();
+        for(Invitation invitation : allInvitations){
+            String inviteKey = invitation.getInviteKey();
+            if(inviteKey.isEmpty()){
+                invitation.setInviteKey(AESUtil.encrypt(String.valueOf(invitation.getId())));
+            }
+            invitationRepository.save(invitation);
+        }
+        return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
+    }
+
+
+
     //초대장 취소(모임 취소)
     public ResponseEntity<ResponseDto> doCancelInvitation(Long invitationId){
-
-
         //초대장 조회
         Optional<Invitation> optionalInvitation = invitationRepository.findById(invitationId);
         if (!optionalInvitation.isPresent()) {
@@ -329,8 +341,6 @@ public class InvitationService {
 
         invitationRepository.save(invitation);
         return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
-
-
 
     }
 

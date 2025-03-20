@@ -168,6 +168,13 @@ public class InvitationController {
         return invitationService.doCancelInvitation(invitationId);
     }
 
+    //초대장 서브키가 없을 경우 PK값으로 서브키 생성(기존 데이터들에 대해 갱신 작업)
+    @Operation(summary = "기존 초대장 서브키 설정 API", description = "서브키 기능이 추가되기 이전에 생성된 초대장에 대해 서브키 생성 해주는 API")
+    @RequestMapping(value = "/doCancelInvitation", method = RequestMethod.POST)
+    public ResponseEntity<ResponseDto> updateSubKey(){
+        return invitationService.updateSubKey();
+    }
+
 
 
 
