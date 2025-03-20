@@ -1,9 +1,6 @@
 package com.dnd12.meetinginvitation.attendence.controller;
 
-import com.dnd12.meetinginvitation.attendence.dto.AttendanceRequest;
-import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginRequest;
-import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginResponse;
-import com.dnd12.meetinginvitation.attendence.dto.UserAttendanceRequest;
+import com.dnd12.meetinginvitation.attendence.dto.*;
 import com.dnd12.meetinginvitation.attendence.service.AttendanceService;
 import com.dnd12.meetinginvitation.common.ApiResponse;
 import com.dnd12.meetinginvitation.common.exception.InvalidPasswordException;
@@ -116,8 +113,14 @@ public class AttendanceResponseController {
         } catch (InvalidPasswordException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
+    }
 
+    //비회원 응답 수정
+    @PutMapping("/nonUser")
+    public ResponseEntity<String> nonUserModify(@RequestParam("attendanceId") Long attendanceId, @RequestBody NonUserModifyRequest nonUserModifyRequest) {
+        log.info("컨트롤러 진입");
+        attendanceService.nonUserModifyResponse(attendanceId, nonUserModifyRequest);
 
-
+        return ResponseEntity.ok("비회원 응답 수정 성공");
     }
 }

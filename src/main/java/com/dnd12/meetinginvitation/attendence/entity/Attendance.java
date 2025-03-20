@@ -42,30 +42,25 @@ public class Attendance {
 //    @Column(nullable = false)
     private String password;
 
-    @ElementCollection
-    private List<String> messages = new ArrayList<>();
+//    @ElementCollection
+    private String message;
 
     //응답 날짜
     private LocalDateTime date;
 
     @Builder
     public Attendance(Invitation invitation, User user, AttendanceStatus state, String name, String password, LocalDateTime date, String message) {
-
         this.invitation = invitation;
         this.user = user;
         this.state = state;
         this.name = name;
         this.password = password;
         this.date = date;
-        if (message != null && !message.trim().isEmpty()) {
-            this.messages.add(message);
-        }
+        this.message = message;
     }
 
-    // 메시지 추가 메서드
-    public void addMessage(String message) {
-        if (message != null && !message.trim().isEmpty()) {
-            this.messages.add(message);
-        }
+    public void updateState(AttendanceStatus state, String newMessage) {
+        this.state = state;
+        this.message = newMessage;
     }
 }

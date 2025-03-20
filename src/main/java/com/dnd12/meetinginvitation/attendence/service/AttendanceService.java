@@ -1,9 +1,6 @@
 package com.dnd12.meetinginvitation.attendence.service;
 
-import com.dnd12.meetinginvitation.attendence.dto.AttendanceRequest;
-import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginRequest;
-import com.dnd12.meetinginvitation.attendence.dto.NonUserLoginResponse;
-import com.dnd12.meetinginvitation.attendence.dto.UserAttendanceRequest;
+import com.dnd12.meetinginvitation.attendence.dto.*;
 import com.dnd12.meetinginvitation.attendence.entity.Attendance;
 import com.dnd12.meetinginvitation.attendence.repository.AttendanceRepository;
 import com.dnd12.meetinginvitation.common.exception.InvalidPasswordException;
@@ -15,12 +12,16 @@ import com.dnd12.meetinginvitation.invitation.repository.InvitationRepository;
 import com.dnd12.meetinginvitation.jwt.JwtTokenProvider;
 import com.dnd12.meetinginvitation.user.entity.User;
 import com.dnd12.meetinginvitation.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -124,6 +125,15 @@ public class AttendanceService {
                 .state(attendance.getState())
                 .name(attendance.getName())
                 .token(token)
+                .id(attendance.getId())
                 .build();
     }
+
+    public void nonUserModifyResponse(Long id, NonUserModifyRequest nonUserModifyRequest) {
+        //비회원 정보 조회
+        Attendance attendance = attendanceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("참석자 정보를 찾을 수 없습니다."));
+        attendance.updateState(nonUserModifyRequest.getState(),nonUserModifyRequest.getNewMessage());
+    }
+
 }
