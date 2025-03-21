@@ -4,6 +4,7 @@ import com.dnd12.meetinginvitation.attendence.dto.*;
 import com.dnd12.meetinginvitation.attendence.service.AttendanceService;
 import com.dnd12.meetinginvitation.common.ApiResponse;
 import com.dnd12.meetinginvitation.common.exception.InvalidPasswordException;
+import com.dnd12.meetinginvitation.invitation.dto.ResponseDto;
 import com.dnd12.meetinginvitation.user.dto.LoginResponse;
 import com.dnd12.meetinginvitation.user.service.KakaoLoginService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -122,5 +123,13 @@ public class AttendanceResponseController {
         attendanceService.nonUserModifyResponse(attendanceId, nonUserModifyRequest);
 
         return ResponseEntity.ok("비회원 응답 수정 성공");
+    }
+
+
+    //회원응답 수정
+    @Operation(summary = "회원응답 수정", description = "")
+    @RequestMapping(value = "/modifyUserAttendance", method = RequestMethod.PUT)
+    public ResponseEntity<ResponseDto> modifyUserAttendance(@RequestBody UserAttendanceRequest userAttendanceRequest){
+        return attendanceService.modifyUserAttendance(userAttendanceRequest);
     }
 }

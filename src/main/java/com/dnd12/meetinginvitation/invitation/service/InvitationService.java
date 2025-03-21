@@ -447,7 +447,6 @@ public class InvitationService {
 
 
 
-
 //초대장 수정
 public ResponseEntity<ResponseDto> modifyInvitation(Long id, InvitationDto invitationDto) {
 

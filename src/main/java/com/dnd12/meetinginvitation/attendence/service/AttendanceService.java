@@ -4,6 +4,7 @@ import com.dnd12.meetinginvitation.attendence.dto.*;
 import com.dnd12.meetinginvitation.attendence.entity.Attendance;
 import com.dnd12.meetinginvitation.attendence.repository.AttendanceRepository;
 import com.dnd12.meetinginvitation.common.exception.InvalidPasswordException;
+import com.dnd12.meetinginvitation.invitation.dto.ResponseDto;
 import com.dnd12.meetinginvitation.invitation.entity.Invitation;
 import com.dnd12.meetinginvitation.invitation.entity.InvitationParticipant;
 import com.dnd12.meetinginvitation.invitation.enums.InvitationType;
@@ -15,15 +16,13 @@ import com.dnd12.meetinginvitation.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -134,6 +133,15 @@ public class AttendanceService {
         Attendance attendance = attendanceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("참석자 정보를 찾을 수 없습니다."));
         attendance.updateState(nonUserModifyRequest.getState(),nonUserModifyRequest.getNewMessage());
+    }
+
+
+    //회원응답 수정
+    public ResponseEntity<ResponseDto> modifyUserAttendance(UserAttendanceRequest dto){
+        Attendance attendace = attendanceRepository.findByInvitationIdAndUserId(dto.getInvitationId(), dto.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("Fail : 해당 초대장 및 사용자 정보가 존재하지 않습니다."));
+        attendace.updateState(dto.getState(), dto.getMessage());
+        return ResponseEntity.ok(ResponseDto.success(Collections.singletonList("")));
     }
 
 }
