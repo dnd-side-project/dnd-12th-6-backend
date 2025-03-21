@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
@@ -12,4 +13,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     boolean existsByName(String name);
     boolean existsByUser_Id(Long userId);
     Attendance findByInvitationIdAndName(Long invitationId, String name);
+    Optional<Attendance> findByInvitationIdAndUserId(Long invitationId, Long userId);
 }
