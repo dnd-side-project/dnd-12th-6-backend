@@ -1,6 +1,6 @@
 package com.dnd12.meetinginvitation.util;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -9,15 +9,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 
+@Service
 public class AESUtil {
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String CHARSET = "UTF-8";
-
-    private static final Dotenv dotenv = Dotenv.load();
-    //private static final String SECRET_KEY = dotenv.get("AES_SECRET_KEY");
     private static final String SECRET_KEY = "12345678901234561234567890123456  ";
-    //private static final String IV = dotenv.get("AES_IV");
     private static final String IV = "1234567890123456";
 
     // 키가 32바이트보다 길면 자르고, 짧으면 32바이트로 패딩을 추가하는 방법
