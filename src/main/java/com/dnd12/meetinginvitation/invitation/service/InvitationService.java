@@ -56,7 +56,6 @@ public class InvitationService {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-
     //초대장 생성
     @Transactional
     public ResponseEntity<ResponseDto> makeInvitation(InvitationDto invitationDto) {
