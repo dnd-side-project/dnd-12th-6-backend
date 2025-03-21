@@ -14,8 +14,18 @@ public class AESUtil {
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String CHARSET = "UTF-8";
-    private static final String SECRET_KEY = "12345678901234561234567890123456  ";
+    private static final String SECRET_KEY = "12345678901234561234567890123456";
     private static final String IV = "1234567890123456";
+
+
+    // 알고리즘이 유효한지 미리 체크(aws에서 오류 발생으로 체크용)
+    static {
+        try {
+            Cipher.getInstance(ALGORITHM);
+        } catch (Exception e) {
+            throw new RuntimeException("AESUtil 초기화 오류", e);
+        }
+    }
 
     // 키가 32바이트보다 길면 자르고, 짧으면 32바이트로 패딩을 추가하는 방법
     private static SecretKeySpec getSecretKey() throws Exception {
